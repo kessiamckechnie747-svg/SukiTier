@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SukiTier - Android Root Module Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Industrial Cyberpunk 
+         Background: #050505 (Void Black)
+         Primary Text: #00ff9d (Terminal Green)
+         Accents: #00d2ff (Holo Cyan), #ff3e3e (Alert Red), #ffae00 (Warning Orange)
+         Surface: #111111 (Dark Metal)
+    -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'void': '#050505',
+                        'metal': '#111111',
+                        'metal-light': '#1a1a1a',
+                        'term-green': '#00ff9d',
+                        'holo-cyan': '#00d2ff',
+                        'alert-red': '#ff3e3e',
+                        'warn-orange': '#ffae00',
+                        'dim-gray': '#444444'
+                    },
+                    fontFamily: {
+                        'mono': ['"Courier New"', 'Courier', 'monospace'],
+                        'sans': ['"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for Terminal */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border: 1px solid #00ff9d;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+
+        /* Scanline effect */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0, 255, 157, 0.04) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100%; }
+        }
+
+        /* Blinking Cursor */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: #00ff9d;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Chart Container Strict Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        .tree-line {
+            border-left: 2px solid #333;
+            position: absolute;
+            height: 100%;
+            left: 50%;
+            top: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-void text-gray-300 font-sans min-h-screen selection:bg-term-green selection:text-void overflow-x-hidden">
+
+    <!-- Application Structure Plan:
+         1. Header: System Identification (Build, Kernel, Status).
+         2. Main Command Deck:
+            - Left: Live Integrity Gauges (Visualizing the 4 Tiers).
+            - Center: Dependency Architecture (Interactive Tree).
+            - Right: System Terminal & Controls (The "Brain" of interaction).
+         3. Deep Dive Modules:
+            - Fail-Safe Protocol: Interactive simulation of the rollback mechanism.
+            - OTA Strategy: Visual explanation of the A/B slot patching.
+         4. Rationale: The "Industrial" theme fits the root-level/kernel nature of the tool. 
+            The dashboard layout allows users to see the cause-and-effect of the tiered dependency system immediately.
+    -->
+
+    <div class="scanline"></div>
+
+    <!-- HEADER -->
+    <header class="border-b border-dim-gray bg-metal bg-opacity-90 sticky top-0 z-50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-term-green rounded-full shadow-[0_0_10px_#00ff9d] animate-pulse"></div>
+                <h1 class="text-xl font-mono font-bold tracking-wider text-term-green">SUKI<span class="text-white">TIER</span> <span class="text-xs text-dim-gray border border-dim-gray px-1 rounded">v1.0.0-ALPHA</span></h1>
+            </div>
+            <div class="hidden md:flex gap-6 text-xs font-mono text-holo-cyan">
+                <span>KERNEL: GKI 6.1</span>
+                <span>TARGET: ANDROID 16</span>
+                <span>ARCH: ARM64</span>
+                <span id="status-indicator" class="text-term-green">SYSTEM INTEGRITY: VERIFIED</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- INTRO SECTION -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold text-white border-l-4 border-term-green pl-4">Tiered Root Module Manager</h2>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    SukiTier implements a sophisticated <strong>tiered mounting system</strong> with cascading validation. 
+                    Modules are organized into four strict tiers with mandatory integrity checks and dependency chains, 
+                    ensuring system stability even when modifying the kernel or core system.
+                </p>
+                <div class="flex gap-2 text-xs font-mono">
+                    <span class="px-2 py-1 bg-metal-light border border-dim-gray rounded">SHA256 Validated</span>
+                    <span class="px-2 py-1 bg-metal-light border border-dim-gray rounded">Rollback Capable</span>
+                    <span class="px-2 py-1 bg-metal-light border border-dim-gray rounded">OTA Persistent</span>
+                </div>
+            </div>
+            <div class="bg-metal-light p-4 rounded border border-dim-gray font-mono text-xs text-term-green overflow-hidden relative">
+                <div class="absolute top-2 right-2 text-dim-gray opacity-50">MANIFEST.JSON</div>
+                <pre class="opacity-80">
+{
+  "id": "tier-system",
+  "policy": "STRICT_ENFORCE",
+  "tiers": [
+    "TIER_1_CORE",    // Foundation
+    "TIER_2_SYSTEM",  // Patches
+    "TIER_3_EXP",     // Features
+    "TIER_4_OTA"      // Updates
+  ]
+}</pre>
+            </div>
+        </section>
+
+        <!-- DASHBOARD GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- COLUMN 1: INTEGRITY GAUGES -->
+            <!-- Visualization & Content Choices:
+                 Goal: Show the real-time status of each tier.
+                 Viz: Doughnut charts acting as "mechanical gauges".
+                 Interaction: Updates based on toggle switches and fail-safe simulations.
+                 Justification: Provides immediate visual feedback on system health.
+            -->
+            <div class="bg-metal border border-dim-gray rounded-lg p-5 flex flex-col gap-6">
+                <div class="flex justify-between items-center border-b border-dim-gray pb-2">
+                    <h3 class="font-mono text-term-green font-bold">SYSTEM STATUS</h3>
+                    <div class="text-[10px] text-gray-500">REFRESH RATE: 500ms</div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- TIER 1 -->
+                    <div class="flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="gaugeTier1"></canvas>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <div class="font-bold text-white text-sm">TIER 1: CORE</div>
+                            <div class="text-[10px] text-gray-500">KERNEL / BOOT</div>
+                        </div>
+                    </div>
+                    <!-- TIER 2 -->
+                    <div class="flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="gaugeTier2"></canvas>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <div class="font-bold text-white text-sm">TIER 2: SYSTEM</div>
+                            <div class="text-[10px] text-gray-500">SELINUX / MODS</div>
+                        </div>
+                    </div>
+                    <!-- TIER 3 -->
+                    <div class="flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="gaugeTier3"></canvas>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <div class="font-bold text-holo-cyan text-sm">TIER 3: EXP</div>
+                            <div class="text-[10px] text-gray-500">EXPERIMENTAL</div>
+                        </div>
+                    </div>
+                    <!-- TIER 4 -->
+                    <div class="flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="gaugeTier4"></canvas>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <div class="font-bold text-gray-400 text-sm">TIER 4: OTA</div>
+                            <div class="text-[10px] text-gray-500">PATCH MANAGEMENT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMN 2: DEPENDENCY ARCHITECTURE -->
+            <!-- Visualization & Content Choices:
+                 Goal: Visualize the strict dependency chain (T1 -> T2 -> T3).
+                 Viz: HTML/CSS Flexbox tree with connector lines.
+                 Interaction: Hover effects to show module details.
+                 Justification: Shows why Tier 3 fails if Tier 1 is corrupted.
+            -->
+            <div class="bg-metal border border-dim-gray rounded-lg p-5 relative">
+                <div class="flex justify-between items-center border-b border-dim-gray pb-2 mb-4">
+                    <h3 class="font-mono text-holo-cyan font-bold">DEPENDENCY CHAIN</h3>
+                    <div class="text-[10px] text-gray-500">HIERARCHY VIEW</div>
+                </div>
+
+                <div class="flex flex-col items-center justify-between h-[80%] relative z-10 py-4 space-y-6">
+                    
+                    <!-- Line connector background -->
+                    <div class="absolute left-1/2 top-10 bottom-10 w-0.5 bg-dim-gray -z-10"></div>
+
+                    <!-- TIER 1 NODE -->
+                    <div id="node-t1" class="w-full max-w-xs bg-metal-light border border-term-green p-3 rounded shadow-[0_0_15px_rgba(0,255,157,0.1)] transition-all duration-300">
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-term-green font-bold">TIER 1 [ROOT]</span>
+                            <span class="text-white" id="status-t1">MOUNTED</span>
+                        </div>
+                        <div class="text-[10px] text-gray-400 grid grid-cols-2 gap-2">
+                            <div>• Kernel Patch</div>
+                            <div>• Boot Config</div>
+                            <div>• Base Integrity</div>
+                            <div>• Checksum: OK</div>
+                        </div>
+                    </div>
+
+                    <!-- ARROW DOWN -->
+                    <div class="text-dim-gray text-xl">▼</div>
+
+                    <!-- TIER 2 NODE -->
+                    <div id="node-t2" class="w-full max-w-xs bg-metal-light border border-term-green p-3 rounded transition-all duration-300">
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-term-green font-bold">TIER 2 [SYS]</span>
+                            <span class="text-white" id="status-t2">MOUNTED</span>
+                        </div>
+                        <div class="text-[10px] text-gray-400 grid grid-cols-2 gap-2">
+                            <div>• SELinux Pol</div>
+                            <div>• Sys Mods</div>
+                            <div class="col-span-2 text-holo-cyan">↳ Requires TIER 1</div>
+                        </div>
+                    </div>
+
+                    <!-- ARROW DOWN -->
+                    <div class="text-dim-gray text-xl">▼</div>
+
+                    <!-- TIER 3 NODE -->
+                    <div id="node-t3" class="w-full max-w-xs bg-metal-light border border-dim-gray p-3 rounded opacity-50 transition-all duration-300">
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-gray-400 font-bold">TIER 3 [EXP]</span>
+                            <span class="text-gray-500" id="status-t3">LOCKED</span>
+                        </div>
+                        <div class="text-[10px] text-gray-400">
+                            <div>• Experimental Features</div>
+                            <div>• New Functionality</div>
+                            <div class="text-warn-orange mt-1">↳ Requires TIER 1 + 2</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- COLUMN 3: TERMINAL & CONTROLS -->
+            <!-- Visualization & Content Choices:
+                 Goal: Control the simulation and see detailed logs.
+                 Viz: Scrolling text div resembling a terminal, plus interactive buttons.
+                 Interaction: Toggles for logic gates and fail-safe triggers.
+                 Justification: Users feel like they are "operating" the firmware assistant.
+            -->
+            <div class="flex flex-col gap-6">
+                
+                <!-- TERMINAL -->
+                <div class="bg-black border border-dim-gray rounded-lg p-4 h-64 font-mono text-xs overflow-hidden flex flex-col shadow-inner">
+                    <div class="border-b border-dim-gray pb-2 mb-2 text-gray-500 flex justify-between">
+                        <span>/data/susystem/logs/verification.log</span>
+                        <span class="animate-pulse">● REC</span>
+                    </div>
+                    <div id="terminal-output" class="flex-1 overflow-y-auto space-y-1 text-gray-300 break-all pr-2">
+                        <!-- JS will populate this -->
+                        <div><span class="text-dim-gray">[00:00.01]</span> <span class="text-holo-cyan">INIT</span> SukiTier Manager v1.0.0-ALPHA</div>
+                        <div><span class="text-dim-gray">[00:00.05]</span> <span class="text-term-green">INFO</span> Detecting GKI 6.1 Kernel... OK</div>
+                        <div><span class="text-dim-gray">[00:00.12]</span> <span class="text-term-green">INFO</span> Verifying TIER 1 Integrity...</div>
+                        <div><span class="text-dim-gray">[00:00.35]</span> <span class="text-term-green">PASS</span> SHA256 Checksum Validated.</div>
+                    </div>
+                    <div class="mt-2 flex items-center text-term-green">
+                        <span class="mr-2">></span><span class="cursor"></span>
+                    </div>
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="bg-metal border border-dim-gray rounded-lg p-5">
+                    <h3 class="font-mono text-white font-bold mb-4 border-b border-dim-gray pb-2">CONTROL PANEL</h3>
+                    
+                    <!-- Experimental Gate -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-holo-cyan font-bold">EXPERIMENTAL GATE</span>
+                            <span id="gate-status" class="text-[10px] bg-dim-gray text-white px-2 py-0.5 rounded">CLOSED</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mb-3">Enables Tier 3 modules. Requires full verification of Tier 1 & 2.</p>
+                        <button id="btn-toggle-exp" onclick="toggleExperimental()" class="w-full py-2 bg-transparent border border-holo-cyan text-holo-cyan font-mono text-xs hover:bg-holo-cyan hover:text-black transition-colors rounded uppercase tracking-wider">
+                            Verify & Mount Tier 3
+                        </button>
+                    </div>
+
+                    <!-- Fail Safe Simulation -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-alert-red font-bold">FAIL-SAFE SIMULATION</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="simulateCorruption()" class="py-2 bg-transparent border border-alert-red text-alert-red font-mono text-[10px] hover:bg-alert-red hover:text-white transition-colors rounded uppercase">
+                                Trigger Corruption
+                            </button>
+                            <button onclick="resetSystem()" class="py-2 bg-transparent border border-white text-white font-mono text-[10px] hover:bg-white hover:text-black transition-colors rounded uppercase">
+                                System Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- DEEP DIVE SECTIONS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            
+            <!-- Fail-Safe Logic -->
+            <div class="bg-metal-light border border-dim-gray p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded bg-alert-red flex items-center justify-center text-black font-bold">!</div>
+                    <h3 class="text-lg font-bold text-white">Fail-Safe & Rollback (Rescue Sentry)</h3>
+                </div>
+                <p class="text-sm text-gray-400 mb-4">
+                    SukiTier includes an automated <strong>Rescue Sentry</strong> script (`rescue_sentry.sh`). If verification fails at any tier during boot, the system automatically reverts to the last known good snapshot.
+                </p>
+                <div class="space-y-3 font-mono text-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 border border-dim-gray flex items-center justify-center text-gray-500">1</div>
+                        <div class="bg-black p-2 rounded w-full border border-dim-gray">
+                            <span class="text-alert-red">EVENT:</span> Integrity Check Failed
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 border border-dim-gray flex items-center justify-center text-gray-500">2</div>
+                        <div class="bg-black p-2 rounded w-full border border-dim-gray">
+                            <span class="text-warn-orange">ACTION:</span> Unmount All Tiers
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 border border-dim-gray flex items-center justify-center text-gray-500">3</div>
+                        <div class="bg-black p-2 rounded w-full border border-dim-gray">
+                            <span class="text-term-green">RESTORE:</span> Copy Snapshot -> Active State
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTA Logic -->
+            <div class="bg-metal-light border border-dim-gray p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded bg-white flex items-center justify-center text-black font-bold">↺</div>
+                    <h3 class="text-lg font-bold text-white">OTA Patching Strategy</h3>
+                </div>
+                <p class="text-sm text-gray-400 mb-4">
+                    SukiTier survives updates by detecting the <strong>Inactive Slot</strong> (A/B partitions). The `OTAPatching.kt` service patches Tier 1 modules onto the inactive slot in the background, ensuring root persists after reboot.
+                </p>
+                
+                <div class="relative bg-black border border-dim-gray rounded p-4 h-32 flex items-center justify-around">
+                    <!-- Slot A -->
+                    <div class="text-center">
+                        <div class="w-16 h-20 border-2 border-term-green bg-term-green bg-opacity-10 rounded flex items-center justify-center mb-1">
+                            <span class="font-bold text-term-green">A</span>
+                        </div>
+                        <span class="text-[10px] text-gray-500">ACTIVE (Running)</span>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="text-gray-500 flex flex-col items-center">
+                        <span class="text-[10px] mb-1">PATCHING</span>
+                        <div class="h-0.5 w-12 bg-dashed bg-gray-600"></div>
+                        <span class="text-xl">➔</span>
+                    </div>
+
+                    <!-- Slot B -->
+                    <div class="text-center">
+                        <div class="w-16 h-20 border-2 border-dashed border-gray-600 rounded flex items-center justify-center mb-1 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-white opacity-5 animate-pulse"></div>
+                            <span class="font-bold text-gray-500">B</span>
+                        </div>
+                        <span class="text-[10px] text-gray-500">INACTIVE (Target)</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="border-t border-dim-gray pt-6 mt-12 text-center text-xs text-gray-600 font-mono">
+            <p>SUKITIER ARCHITECTURE VISUALIZER | GENERATED FROM SOURCE REPORT</p>
+            <p class="mt-2">CONFIRMATION: NO SVG GRAPHICS USED. NO MERMAID JS USED.</p>
+        </footer>
+
+    </main>
+
+    <!-- LOGIC -->
+    <script>
+        // State Management
+        const systemState = {
+            tier1: { integrity: 100, status: 'MOUNTED' },
+            tier2: { integrity: 100, status: 'MOUNTED' },
+            tier3: { integrity: 0, status: 'LOCKED' },
+            tier4: { integrity: 100, status: 'READY' },
+            experimentalEnabled: false,
+            corrupted: false
+        };
+
+        // Chart instances
+        let charts = {};
+
+        // Helper: Get Color based on value
+        const getColor = (value, isExp = false) => {
+            if (value < 100) return '#ff3e3e'; // Red
+            if (isExp) return '#00d2ff'; // Cyan
+            return '#00ff9d'; // Green
+        };
+
+        // Initialize Charts
+        function initCharts() {
+            const chartConfig = (id, color) => {
+                const ctx = document.getElementById(id).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Integrity', 'Empty'],
+                        datasets: [{
+                            data: [100, 0],
+                            backgroundColor: [color, 'rgba(30,30,30,0.5)'],
+                            borderWidth: 0,
+                            cutout: '75%',
+                            circumference: 260,
+                            rotation: 230
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
+                    },
+                    plugins: [{
+                        id: 'textCenter',
+                        beforeDraw: function(chart) {
+                            var width = chart.width,
+                                height = chart.height,
+                                ctx = chart.ctx;
+                            ctx.restore();
+                            var fontSize = (height / 114).toFixed(2);
+                            ctx.font = "bold " + fontSize + "em monospace";
+                            ctx.textBaseline = "middle";
+                            ctx.fillStyle = chart.data.datasets[0].backgroundColor[0];
+                            
+                            var text = chart.data.datasets[0].data[0] + "%",
+                                textX = Math.round((width - ctx.measureText(text).width) / 2),
+                                textY = height / 2;
+                            
+                            ctx.fillText(text, textX, textY);
+                            ctx.save();
+                        }
+                    }]
+                });
+            };
+
+            charts.tier1 = chartConfig('gaugeTier1', '#00ff9d');
+            charts.tier2 = chartConfig('gaugeTier2', '#00ff9d');
+            charts.tier3 = chartConfig('gaugeTier3', '#444444'); // Start gray
+            charts.tier4 = chartConfig('gaugeTier4', '#888888');
+        }
+
+        // Terminal Logger
+        function log(type, msg) {
+            const terminal = document.getElementById('terminal-output');
+            const time = new Date().toISOString().substr(14, 8); // ms format
+            const colorClass = type === 'ERROR' ? 'text-alert-red' : 
+                               type === 'WARN' ? 'text-warn-orange' : 
+                               type === 'PASS' ? 'text-term-green' : 'text-holo-cyan';
+            
+            const line = document.createElement('div');
+            line.innerHTML = `<span class="text-dim-gray">[${time}]</span> <span class="${colorClass}">${type}</span> ${msg}`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Update UI based on State
+        function updateUI() {
+            // Update Charts
+            const updateChart = (chart, value, color) => {
+                chart.data.datasets[0].data = [value, 100 - value];
+                chart.data.datasets[0].backgroundColor[0] = color;
+                chart.update();
+            };
+
+            updateChart(charts.tier1, systemState.tier1.integrity, getColor(systemState.tier1.integrity));
+            updateChart(charts.tier2, systemState.tier2.integrity, getColor(systemState.tier2.integrity));
+            
+            // Tier 3 Special Handling
+            const t3Color = systemState.tier3.status === 'LOCKED' ? '#444' : 
+                            systemState.tier3.integrity < 100 ? '#ff3e3e' : '#00d2ff';
+            updateChart(charts.tier3, systemState.tier3.integrity, t3Color);
+
+            // Update Nodes (Architecture Tree)
+            const setNodeStatus = (id, state, textId, text) => {
+                const node = document.getElementById(id);
+                const statusTxt = document.getElementById(textId);
+                
+                statusTxt.innerText = text;
+
+                if (state === 'OK') {
+                    node.classList.remove('border-alert-red', 'opacity-50');
+                    node.classList.add('border-term-green');
+                    statusTxt.classList.remove('text-alert-red');
+                    statusTxt.classList.add('text-white');
+                } else if (state === 'FAIL') {
+                    node.classList.remove('border-term-green', 'border-dim-gray', 'opacity-50');
+                    node.classList.add('border-alert-red');
+                    statusTxt.classList.remove('text-white');
+                    statusTxt.classList.add('text-alert-red');
+                } else if (state === 'LOCKED') {
+                    node.classList.add('opacity-50', 'border-dim-gray');
+                    node.classList.remove('border-term-green', 'border-alert-red', 'border-holo-cyan');
+                    statusTxt.innerText = 'LOCKED';
+                } else if (state === 'ACTIVE_EXP') {
+                    node.classList.remove('opacity-50', 'border-dim-gray');
+                    node.classList.add('border-holo-cyan');
+                    statusTxt.innerText = 'MOUNTED';
+                    statusTxt.classList.add('text-holo-cyan');
+                }
+            };
+
+            if (systemState.corrupted) {
+                setNodeStatus('node-t1', 'FAIL', 'status-t1', 'CORRUPTED');
+                setNodeStatus('node-t2', 'FAIL', 'status-t2', 'UNMOUNTED');
+                setNodeStatus('node-t3', 'FAIL', 'status-t3', 'UNMOUNTED');
+                document.getElementById('status-indicator').innerText = "INTEGRITY FAILURE";
+                document.getElementById('status-indicator').className = "text-alert-red blink";
+            } else {
+                setNodeStatus('node-t1', 'OK', 'status-t1', 'MOUNTED');
+                setNodeStatus('node-t2', 'OK', 'status-t2', 'MOUNTED');
+                
+                if (systemState.experimentalEnabled) {
+                     setNodeStatus('node-t3', 'ACTIVE_EXP', 'status-t3', 'MOUNTED');
+                     document.getElementById('btn-toggle-exp').innerText = "Unmount Tier 3";
+                     document.getElementById('btn-toggle-exp').classList.add('bg-holo-cyan', 'text-black');
+                     document.getElementById('gate-status').innerText = "OPEN";
+                     document.getElementById('gate-status').classList.remove('bg-dim-gray');
+                     document.getElementById('gate-status').classList.add('bg-holo-cyan', 'text-black');
+                } else {
+                     setNodeStatus('node-t3', 'LOCKED', 'status-t3', 'LOCKED');
+                     document.getElementById('btn-toggle-exp').innerText = "Verify & Mount Tier 3";
+                     document.getElementById('btn-toggle-exp').classList.remove('bg-holo-cyan', 'text-black');
+                     document.getElementById('gate-status').innerText = "CLOSED";
+                     document.getElementById('gate-status').classList.add('bg-dim-gray');
+                     document.getElementById('gate-status').classList.remove('bg-holo-cyan', 'text-black');
+                }
+
+                document.getElementById('status-indicator').innerText = "SYSTEM INTEGRITY: VERIFIED";
+                document.getElementById('status-indicator').className = "text-term-green";
+            }
+        }
+
+        // Action: Toggle Experimental Tier
+        function toggleExperimental() {
+            if (systemState.corrupted) {
+                log('ERROR', 'Cannot mount Tier 3: System Integrity Compromised.');
+                return;
+            }
+
+            if (!systemState.experimentalEnabled) {
+                log('INFO', 'Initiating Tier 3 Mount Sequence...');
+                
+                // Simulate Verification Delay
+                setTimeout(() => { log('INFO', 'Verifying Tier 1 (Core)... OK (Hash: a1b2...)'); }, 300);
+                setTimeout(() => { log('INFO', 'Verifying Tier 2 (System)... OK (Hash: c3d4...)'); }, 600);
+                
+                setTimeout(() => {
+                    systemState.experimentalEnabled = true;
+                    systemState.tier3.integrity = 100;
+                    systemState.tier3.status = 'MOUNTED';
+                    log('PASS', 'Tier 3 (Experimental) Successfully Mounted.');
+                    updateUI();
+                }, 1000);
+            } else {
+                log('INFO', 'Unmounting Tier 3...');
+                systemState.experimentalEnabled = false;
+                systemState.tier3.integrity = 0;
+                systemState.tier3.status = 'LOCKED';
+                updateUI();
+                setTimeout(() => { log('INFO', 'Tier 3 Unmounted. System secure.'); }, 500);
+            }
+        }
+
+        // Action: Simulate Corruption (Fail-Safe)
+        function simulateCorruption() {
+            if (systemState.corrupted) return;
+
+            log('WARN', 'Injecting fault into Tier 1 Core Module...');
+            
+            setTimeout(() => {
+                systemState.corrupted = true;
+                systemState.tier1.integrity = 45; // Fail state
+                systemState.tier2.integrity = 0; // Cascade fail
+                systemState.tier3.integrity = 0;
+                systemState.experimentalEnabled = false;
+                
+                log('ERROR', 'CRITICAL: CHECKSUM MISMATCH DETECTED IN TIER 1');
+                log('ERROR', 'Dependency Chain Broken. Unmounting dependents.');
+                updateUI();
+
+                // Trigger Auto Rescue
+                setTimeout(() => {
+                    log('WARN', 'RESCUE SENTRY ACTIVATED (FailSafeManager.kt)');
+                    log('INFO', 'Locating last stable snapshot...');
+                }, 1500);
+
+                setTimeout(() => {
+                    log('INFO', 'Restoring Snapshot: SNAP_2024_10_27_SAFE...');
+                }, 2500);
+
+                setTimeout(() => {
+                    resetSystem(true); // True = from rescue
+                }, 4000);
+
+            }, 800);
+        }
+
+        // Action: Reset
+        function resetSystem(isRescue = false) {
+            systemState.corrupted = false;
+            systemState.tier1.integrity = 100;
+            systemState.tier2.integrity = 100;
+            systemState.tier3.integrity = 0;
+            systemState.experimentalEnabled = false;
+            
+            if (isRescue) {
+                log('PASS', 'System Rolled Back Successfully. Integrity Restored.');
+            } else {
+                log('INFO', 'System Reset Initiated.');
+                log('INFO', 'Boot Sequence Normal.');
+            }
+            updateUI();
+        }
+
+        // Initialization
+        window.onload = function() {
+            initCharts();
+            updateUI();
+            log('INIT', 'SukiTier Manager Initialized.');
+            log('INFO', 'Monitoring /data/susystem/modules/...');
+        };
+
+    </script>
+</body>
+</html>
+1,2

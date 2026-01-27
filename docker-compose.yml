@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  sukitier-dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./assets:/usr/share/nginx/html:ro
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Mount SSL certificates
+      - ./certs/cert.pem:/etc/nginx/ssl/cert.pem:ro
+      - ./certs/key.pem:/etc/nginx/ssl/key.pem:ro
+    environment:
+      - TZ=UTC
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    restart: unless-stopped
+    networks:
+      - sukitier-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    labels:
+      com.example.description: "SukiTier AI Dashboard"
+      com.example.version: "1.0.0"
+
+  sukitier-backend:
+    image: sukitier-backend:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - SERVER_PORT=8080
+    restart: unless-stopped
+    networks:
+      - sukitier-network
+    depends_on:
+      - sukitier-dashboard
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  sukitier-network:
+    driver: bridge
+
+volumes:
+  sukitier-data:
+    driver: local

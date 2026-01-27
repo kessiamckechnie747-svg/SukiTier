@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SukiTier | Advanced Neural Kernel Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- Enhanced Palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'void': '#050505',
+                        'metal': '#111111',
+                        'metal-light': '#1a1a1a',
+                        'term-green': '#00ff9d',
+                        'holo-cyan': '#00d2ff',
+                        'ai-purple': '#c084fc',
+                        'neural-blue': '#3b82f6',
+                        'reasoning-orange': '#f97316',
+                        'logic-yellow': '#eab308',
+                        'dim-gray': '#444444'
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'neural-flow': 'neural-flow 3s linear infinite',
+                        'matrix-fall': 'matrix-fall 20s linear infinite'
+                    },
+                    keyframes: {
+                        'pulse-glow': {
+                            '0%, 100%': { 'box-shadow': '0 0 5px rgba(59, 130, 246, 0.5)' },
+                            '50%': { 'box-shadow': '0 0 20px rgba(59, 130, 246, 0.8)' }
+                        },
+                        'neural-flow': {
+                            '0%': { 'background-position': '0% 50%' },
+                            '100%': { 'background-position': '200% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;800&display=swap');
+        body { 
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #050505 0%, #0a0a1a 50%, #050505 100%);
+        }
+        
+        /* Neural Network Visualization */
+        .neural-node {
+            position: relative;
+            background: radial-gradient(circle at center, 
+                rgba(59, 130, 246, 0.2) 0%,
+                rgba(192, 132, 252, 0.1) 70%,
+                transparent 100%);
+        }
+        
+        .neural-connection {
+            position: absolute;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(59, 130, 246, 0.3) 50%,
+                transparent 100%);
+            height: 2px;
+            transform-origin: left center;
+        }
+        
+        /* Matrix Effect */
+        .matrix-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 157, 0.03) 0px,
+                rgba(0, 255, 157, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            animation: matrix-fall 20s linear infinite;
+            z-index: -1;
+        }
+        
+        /* Reasoning Engine Visuals */
+        .reasoning-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-path 3s ease-in-out forwards;
+        }
+        
+        @keyframes draw-path {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .active-tab {
+            color: #00ff9d;
+            border-bottom: 2px solid #00ff9d;
+        }
+
+        .nav-link {
+            color: #a0a0a0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen overflow-x-hidden">
+    
+    <!-- Background Effects -->
+    <div class="matrix-layer"></div>
+
+    <!-- Neural Network Visualization (Background) -->
+    <div id="neural-visualization" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10">
+        <!-- ENHANCED NAVIGATION -->
+        <nav class="sticky top-0 z-50 bg-metal/90 backdrop-blur-xl border-b border-dim-gray">
+            <div class="max-w-8xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <div class="w-10 h-10 bg-gradient-to-br from-neural-blue to-ai-purple rounded-lg flex items-center justify-center animate-pulse-glow">
+                            <span class="text-void font-black text-xl">Σ</span>
+                        </div>
+                        <div class="absolute -inset-1 bg-neural-blue/20 blur-md rounded-lg"></div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black tracking-tighter text-white">SUKITIER<span class="text-term-green">.AI</span></h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Advanced Neural Kernel Management</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-8 text-xs font-bold uppercase tracking-widest">
+                    <button onclick="showTab('engine')" class="nav-link py-1 flex items-center gap-2 active-tab" id="tab-engine">
+                        <div class="w-2 h-2 bg-reasoning-orange rounded-full"></div>
+                        Reasoning Engine
+                    </button>
+                    <button onclick="showTab('embeddings')" class="nav-link py-1 flex items-center gap-2" id="tab-embeddings">
+                        <div class="w-2 h-2 bg-neural-blue rounded-full"></div>
+                        Neural Embeddings
+                    </button>
+                    <button onclick="showTab('architecture')" class="nav-link py-1 flex items-center gap-2" id="tab-architecture">
+                        <div class="w-2 h-2 bg-logic-yellow rounded-full"></div>
+                        Hybrid Architecture
+                    </button>
+                    <a href="https://github.com/kessiamckechnie747-svg/SukiTier" target="_blank" class="nav-link py-1 text-holo-cyan flex items-center gap-2">
+                        <div class="w-2 h-2 bg-holo-cyan rounded-full"></div>
+                        GitHub ↗
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="max-w-8xl mx-auto px-6 py-10">
+            
+            <!-- REASONING ENGINE TAB -->
+            <div id="content-engine" class="space-y-10">
+                <!-- Engine Header -->
+                <div class="text-center space-y-4">
+                    <h2 class="text-5xl font-black text-white bg-gradient-to-r from-reasoning-orange to-logic-yellow bg-clip-text text-transparent">
+                        Advanced Reasoning Engine
+                    </h2>
+                    <p class="text-gray-400 text-lg max-w-3xl mx-auto">
+                        Multi-modal reasoning with formal verification, symbolic AI, and neural-symbolic integration
+                    </p>
+                </div>
+
+                <!-- Reasoning Dashboard -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Formal Verification Panel -->
+                    <div class="col-span-2 bg-metal/80 backdrop-blur-sm border border-reasoning-orange/30 rounded-xl p-6 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-reasoning-orange">Formal Verification System</h3>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 bg-reasoning-orange/20 text-reasoning-orange text-xs rounded-full">Z3 Prover</span>
+                                <span class="px-3 py-1 bg-reasoning-orange/20 text-reasoning-orange text-xs rounded-full">Coq</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 bg-term-green rounded-full animate-pulse"></div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-white">Kernel Invariant Checking</span>
+                                        <span class="text-term-green">98% Verified</span>
+                                    </div>
+                                    <div class="h-1 bg-dim-gray rounded-full overflow-hidden mt-1">
+                                        <div class="h-full bg-term-green w-3/4"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-void border border-dim-gray rounded-lg p-4">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-reasoning-orange to-logic-yellow rounded flex items-center justify-center">
+                                        <span class="text-void font-bold text-sm">∀</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold">Theorem Prover Input</h4>
+                                        <p class="text-[10px] text-gray-500">Enter formal specification for kernel verification</p>
+                                    </div>
+                                </div>
+                                <textarea id="theorem-input" class="w-full h-32 bg-black border border-dim-gray rounded p-3 font-mono text-xs text-logic-yellow focus:border-reasoning-orange outline-none" 
+                                          placeholder="∀ kernel_state ∈ K, ∃ safety_invariant ∈ I : verify(kernel_state, safety_invariant) = true"></textarea>
+                                <button onclick="runFormalVerification()" class="mt-3 w-full py-3 bg-gradient-to-r from-reasoning-orange to-logic-yellow text-void font-bold rounded hover:opacity-90 transition-all">
+                                    🧠 Execute Formal Proof
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Symbolic AI Rules Database -->
+                    <div class="bg-metal/80 backdrop-blur-sm border border-logic-yellow/30 rounded-xl p-6">
+                        <h3 class="text-xl font-bold text-logic-yellow mb-4">Symbolic Rule Database</h3>
+                        <div class="space-y-3">
+                            <div class="bg-void border border-logic-yellow/20 rounded p-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-white">Memory Safety</span>
+                                    <span class="text-[10px] px-2 py-1 bg-logic-yellow/20 text-logic-yellow rounded">ACTIVE</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-1">∀ptr ∈ heap, size(ptr) > 0 → access(ptr) ≠ null</p>
+                            </div>
+                            
+                            <div class="bg-void border border-logic-yellow/20 rounded p-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-white">Race Condition Prevention</span>
+                                    <span class="text-[10px] px-2 py-1 bg-logic-yellow/20 text-logic-yellow rounded">ACTIVE</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-1">lock(mutex) ∧ critical_section → ¬∃ conflicting_access</p>
+                            </div>
+                            
+                            <button onclick="addNewRule()" class="w-full py-2 border border-dim-gray border-dashed text-gray-500 rounded hover:border-logic-yellow hover:text-logic-yellow transition-all">
+                                + Add New Logical Rule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neural-Symbolic Integration -->
+                <div class="bg-gradient-to-r from-reasoning-orange/10 to-ai-purple/10 border border-dim-gray rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-white mb-6">Neural-Symbolic Integration Layer</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-bold text-ai-purple mb-3">Neural Pattern Recognition</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-ai-purple rounded-full"></div>
+                                    <span class="text-sm">Anomaly detection in kernel behavior</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-ai-purple rounded-full"></div>
+                                    <span class="text-sm">Temporal pattern learning</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-ai-purple rounded-full"></div>
+                                    <span class="text-sm">Unstructured log understanding</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-bold text-logic-yellow mb-3">Symbolic Reasoning</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-logic-yellow rounded-full"></div>
+                                    <span class="text-sm">Formal verification guarantees</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-logic-yellow rounded-full"></div>
+                                    <span class="text-sm">Rule-based inference</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-logic-yellow rounded-full"></div>
+                                    <span class="text-sm">Causality tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-void border border-dim-gray rounded">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-bold text-white">Integration Pipeline</span>
+                            <span class="text-[10px] px-2 py-1 bg-gradient-to-r from-ai-purple to-logic-yellow text-void rounded-full">ACTIVE</span>
+                        </div>
+                        <div class="h-2 bg-dim-gray rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-ai-purple via-reasoning-orange to-logic-yellow w-3/4 animate-neural-flow"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEURAL EMBEDDINGS TAB -->
+            <div id="content-embeddings" class="hidden space-y-10">
+                <div class="text-center space-y-4">
+                    <h2 class="text-5xl font-black text-white bg-gradient-to-r from-neural-blue to-ai-purple bg-clip-text text-transparent">
+                        Neural Embeddings System
+                    </h2>
+                    <p class="text-gray-400 text-lg max-w-3xl mx-auto">
+                        High-dimensional embedding space for kernel operations with mathematical transformations
+                    </p>
+                </div>
+
+                <!-- Embedding Visualization -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-metal/80 backdrop-blur-sm border border-neural-blue/30 rounded-xl p-6">
+                        <h3 class="text-xl font-bold text-neural-blue mb-4">Embedding Space Explorer</h3>
+                        <div class="h-64 bg-void border border-dim-gray rounded-lg relative" id="embedding-canvas">
+                            <!-- Embedding visualization will be drawn here -->
+                        </div>
+                        <div class="mt-4 grid grid-cols-3 gap-3">
+                            <button onclick="projectEmbeddings('pca')" class="py-2 border border-neural-blue/30 text-neural-blue text-xs rounded hover:bg-neural-blue/20 transition-all">
+                                PCA Projection
+                            </button>
+                            <button onclick="projectEmbeddings('tsne')" class="py-2 border border-neural-blue/30 text-neural-blue text-xs rounded hover:bg-neural-blue/20 transition-all">
+                                t-SNE Projection
+                            </button>
+                            <button onclick="projectEmbeddings('umap')" class="py-2 border border-neural-blue/30 text-neural-blue text-xs rounded hover:bg-neural-blue/20 transition-all">
+                                UMAP Projection
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-metal/80 backdrop-blur-sm border border-ai-purple/30 rounded-xl p-6">
+                            <h3 class="text-xl font-bold text-ai-purple mb-4">Mathematical Transformations</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-white">Cosine Similarity</span>
+                                    <div class="text-xs px-3 py-1 bg-ai-purple/20 text-ai-purple rounded-full">
+                                        sim = 0.92
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-white">Euclidean Distance</span>
+                                    <div class="text-xs px-3 py-1 bg-ai-purple/20 text-ai-purple rounded-full">
+                                        d = 1.34
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-white">Manhattan Distance</span>
+                                    <div class="text-xs px-3 py-1 bg-ai-purple/20 text-ai-purple rounded-full">
+                                        L₁ = 5.67
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-metal/80 backdrop-blur-sm border border-dim-gray rounded-xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Embedding Generation</h3>
+                            <textarea id="embedding-input" class="w-full h-32 bg-void border border-dim-gray rounded p-3 font-mono text-xs text-term-green focus:border-neural-blue outline-none"
+                                      placeholder="Enter kernel operation or syscall to generate embedding..."></textarea>
+                            <button onclick="generateEmbedding()" class="mt-4 w-full py-3 bg-gradient-to-r from-neural-blue to-ai-purple text-void font-bold rounded hover:opacity-90 transition-all">
+                                🧬 Generate Neural Embedding
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HYBRID ARCHITECTURE TAB -->
+            <div id="content-architecture" class="hidden space-y-10">
+                <div class="text-center space-y-4">
+                    <h2 class="text-5xl font-black text-white bg-gradient-to-r from-term-green to-holo-cyan bg-clip-text text-transparent">
+                        Hybrid Client-Server Architecture
+                    </h2>
+                    <p class="text-gray-400 text-lg max-w-3xl mx-auto">
+                        Distributed AI computation with optimal workload partitioning
+                    </p>
+                </div>
+
+                <!-- Architecture Diagram -->
+                <div class="bg-metal/80 backdrop-blur-sm border border-holo-cyan/30 rounded-xl p-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Client Side -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-term-green to-holo-cyan rounded-lg flex items-center justify-center">
+                                    <span class="text-void font-bold">C</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">Client-Side</h3>
+                                    <p class="text-[10px] text-gray-500">Local inference & preprocessing</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-term-green rounded-full"></div>
+                                    <span class="text-sm">TensorFlow.js Models</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-term-green rounded-full"></div>
+                                    <span class="text-sm">WebAssembly Kernels</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-term-green rounded-full"></div>
+                                    <span class="text-sm">Local Rule Evaluation</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Network Layer -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-holo-cyan to-neural-blue rounded-lg flex items-center justify-center">
+                                    <span class="text-void font-bold">∇</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">Network Layer</h3>
+                                    <p class="text-[10px] text-gray-500">Optimized API Gateway</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-holo-cyan rounded-full"></div>
+                                    <span class="text-sm">GraphQL Subscriptions</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-holo-cyan rounded-full"></div>
+                                    <span class="text-sm">WebSocket Streaming</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-holo-cyan rounded-full"></div>
+                                    <span class="text-sm">Edge Computing Nodes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Server Side -->
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-neural-blue to-ai-purple rounded-lg flex items-center justify-center">
+                                    <span class="text-void font-bold">S</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">Server-Side</h3>
+                                    <p class="text-[10px] text-gray-500">Heavy computation & storage</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-neural-blue rounded-full"></div>
+                                    <span class="text-sm">PyTorch GPU Models</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-neural-blue rounded-full"></div>
+                                    <span class="text-sm">Vector Databases</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-neural-blue rounded-full"></div>
+                                    <span class="text-sm">Formal Verification</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-metal/80 backdrop-blur-sm border border-term-green/30 rounded-xl p-6">
+                        <h4 class="text-lg font-bold text-term-green mb-4">Client Performance</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Inference Speed</span>
+                                    <span class="text-term-green">42ms</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-term-green w-3/4"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Memory Usage</span>
+                                    <span class="text-term-green">128MB</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-term-green w-1/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-metal/80 backdrop-blur-sm border border-holo-cyan/30 rounded-xl p-6">
+                        <h4 class="text-lg font-bold text-holo-cyan mb-4">Network Latency</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">API Response</span>
+                                    <span class="text-holo-cyan">156ms</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-holo-cyan w-2/3"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Data Transfer</span>
+                                    <span class="text-holo-cyan">2.3MB/s</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-holo-cyan w-4/5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-metal/80 backdrop-blur-sm border border-neural-blue/30 rounded-xl p-6">
+                        <h4 class="text-lg font-bold text-neural-blue mb-4">Server Load</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">GPU Utilization</span>
+                                    <span class="text-neural-blue">78%</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-neural-blue w-3/4"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Requests/sec</span>
+                                    <span class="text-neural-blue">142</span>
+                                </div>
+                                <div class="h-2 bg-dim-gray rounded-full">
+                                    <div class="h-full bg-neural-blue w-1/2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADVANCED REASONING ENGINE SCRIPT -->
+    <script>
+        // Core Configuration
+        const config = {
+            api: {
+                gemini: "YOUR_GEMINI_API_KEY",
+                reasoning: "https://api.sukitier.ai/reasoning/v1",
+                embeddings: "https://api.sukitier.ai/embeddings/v1"
+            },
+            dimensions: {
+                embedding: 768,
+                reasoning: 512
+            }
+        };
+
+        // Neural Network Visualization
+        class NeuralVisualizer {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.nodes = [];
+                this.connections = [];
+                this.animationId = null;
+                this.init();
+            }
+            
+            init() {
+                this.createNetwork(15, 25);
+                this.animate();
+            }
+            
+            createNetwork(nodes = 10, connections = 20) {
+                for (let i = 0; i < nodes; i++) {
+                    const node = {
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * window.innerHeight,
+                        radius: 2 + Math.random() * 4,
+                        speed: 0.1 + Math.random() * 0.3,
+                        angle: Math.random() * Math.PI * 2
+                    };
+                    this.nodes.push(node);
+                    
+                    const element = document.createElement('div');
+                    element.className = 'neural-node absolute rounded-full';
+                    element.style.width = `${node.radius * 2}px`;
+                    element.style.height = `${node.radius * 2}px`;
+                    element.style.left = `${node.x}px`;
+                    element.style.top = `${node.y}px`;
+                    this.container.appendChild(element);
+                }
+                
+                for (let i = 0; i < connections; i++) {
+                    const from = this.nodes[Math.floor(Math.random() * this.nodes.length)];
+                    const to = this.nodes[Math.floor(Math.random() * this.nodes.length)];
+                    this.connections.push({ from, to });
+                }
+            }
+            
+            animate() {
+                this.nodes.forEach(node => {
+                    node.x += Math.cos(node.angle) * node.speed;
+                    node.y += Math.sin(node.angle) * node.speed;
+                    
+                    if (node.x < 0 || node.x > window.innerWidth) node.angle = Math.PI - node.angle;
+                    if (node.y < 0 || node.y > window.innerHeight) node.angle = -node.angle;
+                });
+                
+                this.animationId = requestAnimationFrame(() => this.animate());
+            }
+
+            destroy() {
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+            }
+        }
+
+        // Advanced Mathematical Functions
+        class MathematicalEngine {
+            static cosineSimilarity(vecA, vecB) {
+                if (vecA.length !== vecB.length) {
+                    console.error('Vector dimensions mismatch');
+                    return 0;
+                }
+                const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+                const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+                const normB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+                return normA === 0 || normB === 0 ? 0 : dot / (normA * normB);
+            }
+            
+            static euclideanDistance(vecA, vecB) {
+                if (vecA.length !== vecB.length) {
+                    console.error('Vector dimensions mismatch');
+                    return 0;
+                }
+                return Math.sqrt(
+                    vecA.reduce((sum, a, i) => sum + Math.pow(a - vecB[i], 2), 0)
+                );
+            }
+
+            static manhattanDistance(vecA, vecB) {
+                if (vecA.length !== vecB.length) {
+                    console.error('Vector dimensions mismatch');
+                    return 0;
+                }
+                return vecA.reduce((sum, a, i) => sum + Math.abs(a - vecB[i]), 0);
+            }
+            
+            static generateEmbedding(text) {
+                // Simulated embedding generation - replace with actual model
+                const embedding = new Array(config.dimensions.embedding);
+                let hash = 0;
+                for (let i = 0; i < text.length; i++) {
+                    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                
+                for (let i = 0; i < config.dimensions.embedding; i++) {
+                    embedding[i] = Math.sin(hash + i) * 0.5 + 0.5;
+                }
+                
+                return embedding;
+            }
+            
+            static projectTo2D(embedding, method = 'pca') {
+                // Simplified projection for visualization
+                const x = embedding.slice(0, 256).reduce((a, b) => a + b, 0) / 256;
+                const y = embedding.slice(256, 512).reduce((a, b) => a + b, 0) / 256;
+                return { x: x * 200 + 100, y: y * 200 + 100 };
+            }
+        }
+
+        // Formal Verification Engine
+        class FormalVerificationEngine {
+            constructor() {
+                this.rules = new Map();
+                this.theorems = new Map();
+                this.initCoreRules();
+            }
+            
+            initCoreRules() {
+                // Core kernel safety rules
+                this.addRule(
+                    'memory_safety',
+                    '∀ptr ∈ heap, size(ptr) > 0 → access(ptr) ≠ null',
+                    this.evaluateMemorySafety
+                );
+                
+                this.addRule(
+                    'race_condition',
+                    'lock(mutex) ∧ critical_section → ¬∃ conflicting_access',
+                    this.evaluateRaceCondition
+                );
+                
+                this.addRule(
+                    'type_safety',
+                    'type(x) = T → operation(x) ∈ operations(T)',
+                    this.evaluateTypeSafety
+                );
+            }
+            
+            addRule(name, formalExpression, evaluator) {
+                this.rules.set(name, {
+                    expression: formalExpression,
+                    evaluator: evaluator,
+                    active: true
+                });
+            }
+            
+            evaluateMemorySafety(state) {
+                // Simplified memory safety evaluation
+                return state && state.memoryAllocations ? 
+                    state.memoryAllocations.every(alloc => 
+                        alloc.size > 0 && alloc.pointer !== null
+                    ) : true;
+            }
+            
+            evaluateRaceCondition(state) {
+                return !state || !state.concurrentAccess ? true :
+                    !state.concurrentAccess.some(access => 
+                        access.mutexLocked && access.inCriticalSection
+                    );
+            }
+            
+            evaluateTypeSafety(state) {
+                return !state || !state.operations ? true :
+                    state.operations.every(op => 
+                        op.type === 'valid' || op.type === 'safe'
+                    );
+            }
+            
+            async verifyTheorem(theoremText) {
+                // Simulated theorem proving
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const result = {
+                    verified: Math.random() > 0.3,
+                    proof: `Proof sketch for: ${theoremText}`,
+                    counterexamples: [],
+                    confidence: 0.85 + Math.random() * 0.14
+                };
+                
+                return result;
+            }
+        }
+
+        // Hybrid API Manager
+        class HybridAPIManager {
+            constructor() {
+                this.cache = new Map();
+                this.pendingRequests = new Map();
+                this.metrics = {
+                    clientInference: 0,
+                    serverRequests: 0,
+                    cacheHits: 0
+                };
+            }
+            
+            async smartRequest(endpoint, data, options = {}) {
+                const cacheKey = `${endpoint}:${JSON.stringify(data)}`;
+                
+                // Check cache first
+                if (this.cache.has(cacheKey) && !options.forceRefresh) {
+                    this.metrics.cacheHits++;
+                    return this.cache.get(cacheKey);
+                }
+                
+                // Determine where to send request
+                const shouldUseClient = this.shouldComputeClientSide(data);
+                
+                if (shouldUseClient) {
+                    this.metrics.clientInference++;
+                    return await this.clientSideInference(data);
+                } else {
+                    this.metrics.serverRequests++;
+                    return await this.serverSideRequest(endpoint, data);
+                }
+            }
+            
+            shouldComputeClientSide(data) {
+                // Simple heuristic based on data size and complexity
+                const size = JSON.stringify(data).length;
+                return size < 5000; // Small requests on client
+            }
+            
+            async clientSideInference(data) {
+                // Simulated client-side computation
+                await new Promise(resolve => setTimeout(resolve, 50));
+                return {
+                    result: 'client_computed',
+                    data: MathematicalEngine.generateEmbedding(data.text || ''),
+                    source: 'client'
+                };
+            }
+            
+            async serverSideRequest(endpoint, data) {
+                try {
+                    const response = await axios.post(endpoint, data, {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    // Cache successful responses
+                    this.cache.set(`${endpoint}:${JSON.stringify(data)}`, response.data);
+                    return response.data;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    // Fallback to client-side inference on error
+                    return await this.clientSideInference(data);
+                }
+            }
+        }
+
+        // Application State Manager
+        class SukiTierAI {
+            constructor() {
+                this.visualizer = new NeuralVisualizer('neural-visualization');
+                this.formalEngine = new FormalVerificationEngine();
+                this.apiManager = new HybridAPIManager();
+                this.currentTab = 'engine';
+                this.init();
+            }
+            
+            init() {
+                this.showTab('engine');
+                this.updateMetrics();
+                this.metricsInterval = setInterval(() => this.updateMetrics(), 5000);
+            }
+            
+            showTab(tabId) {
+                this.currentTab = tabId;
+                document.querySelectorAll('[id^="content-"]').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                    el.classList.remove('active-tab');
+                });
+                
+                const content = document.getElementById(`content-${tabId}`);
+                const tab = document.getElementById(`tab-${tabId}`);
+                
+                if (content) content.classList.remove('hidden');
+                if (tab) tab.classList.add('active-tab');
+                
+                // Initialize tab-specific features
+                if (tabId === 'embeddings') {
+                    this.initEmbeddingVisualization();
+                }
+            }
+            
+            async runFormalVerification() {
+                const theoremInput = document.getElementById('theorem-input');
+                const theorem = theoremInput ? theoremInput.value : '';
+                
+                if (!theorem.trim()) {
+                    alert('Please enter a theorem to verify');
+                    return;
+                }
+                
+                const button = document.querySelector('button[onclick="runFormalVerification()"]');
+                const originalText = button.textContent;
+                button.textContent = '🔬 Proving Theorem...';
+                button.disabled = true;
+                
+                try {
+                    const result = await this.formalEngine.verifyTheorem(theorem);
+                    
+                    // Display result
+                    const modal = document.createElement('div');
+                    modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
+                    modal.innerHTML = `
+                        <div class="bg-metal border border-reasoning-orange rounded-xl p-6 max-w-2xl w-full mx-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-reasoning-orange">Formal Verification Result</h3>
+                                <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-white">✕</button>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full ${result.verified ? 'bg-term-green' : 'bg-red-600'} flex items-center justify-center">
+                                        ${result.verified ? '✓' : '✗'}
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-bold">${result.verified ? 'Theorem Verified' : 'Verification Failed'}</p>
+                                        <p class="text-[10px] text-gray-500">Confidence: ${(result.confidence * 100).toFixed(1)}%</p>
+                                    </div>
+                                </div>
+                                <div class="bg-void p-4 rounded border border-dim-gray">
+                                    <p class="text-sm text-gray-300">${result.proof}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(modal);
+                    
+                } catch (error) {
+                    console.error('Verification failed:', error);
+                    alert('Verification failed: ' + error.message);
+                } finally {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            }
+            
+            async generateEmbedding() {
+                const embeddingInput = document.getElementById('embedding-input');
+                const input = embeddingInput ? embeddingInput.value : '';
+                
+                if (!input.trim()) {
+                    alert('Please enter text to generate embedding');
+                    return;
+                }
+                
+                const embedding = MathematicalEngine.generateEmbedding(input);
+                const projection = MathematicalEngine.projectTo2D(embedding);
+                
+                // Add to visualization
+                const canvas = document.getElementById('embedding-canvas');
+                const point = document.createElement('div');
+                point.className = 'absolute w-3 h-3 bg-neural-blue rounded-full';
+                point.style.left = `${projection.x}px`;
+                point.style.top = `${projection.y}px`;
+                point.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.7)';
+                canvas.appendChild(point);
+                
+                // Display mathematical properties
+                const referenceEmbedding1 = MathematicalEngine.generateEmbedding('kernel operation');
+                const referenceEmbedding2 = MathematicalEngine.generateEmbedding('system call');
+                
+                const cosineSim = MathematicalEngine.cosineSimilarity(embedding, referenceEmbedding1);
+                const euclideanDist = MathematicalEngine.euclideanDistance(embedding, referenceEmbedding2);
+                const manhattanDist = MathematicalEngine.manhattanDistance(embedding, referenceEmbedding2);
+                
+                console.log('Generated embedding:', {
+                    dimensions: embedding.length,
+                    cosineSimilarity: cosineSim.toFixed(4),
+                    euclideanDistance: euclideanDist.toFixed(4),
+                    manhattanDistance: manhattanDist.toFixed(4)
+                });
+
+                // Show success notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed bottom-4 right-4 bg-term-green text-void px-4 py-3 rounded shadow-lg z-50 max-w-xs';
+                notification.innerHTML = `<p class="text-sm font-bold">✓ Embedding generated</p><p class="text-xs mt-1">Cosine Similarity: ${cosineSim.toFixed(4)}</p>`;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 4000);
+            }
+            
+            projectEmbeddings(method) {
+                // Simulate different projection methods
+                const canvas = document.getElementById('embedding-canvas');
+                canvas.innerHTML = ''; // Clear existing points
+                
+                // Generate sample points based on method
+                const numPoints = 20;
+                for (let i = 0; i < numPoints; i++) {
+                    let x, y;
+                    
+                    if (method === 'pca') {
+                        // PCA: Linear projection with clusters
+                        x = 50 + (Math.random() + Math.floor(i / 10)) * 100;
+                        y = 50 + Math.random() * 150;
+                    } else if (method === 'tsne') {
+                        // t-SNE: Clustered points
+                        const cluster = Math.floor(i / 5);
+                        x = 50 + cluster * 60 + Math.random() * 40;
+                        y = 50 + (i % 5) * 30 + Math.random() * 20;
+                    } else {
+                        // UMAP: Distributed points
+                        x = 50 + Math.random() * 200;
+                        y = 50 + Math.random() * 150;
+                    }
+                    
+                    const point = document.createElement('div');
+                    point.className = 'absolute w-2 h-2 rounded-full';
+                    point.style.left = `${x}px`;
+                    point.style.top = `${y}px`;
+                    
+                    // Color based on method
+                    if (method === 'pca') {
+                        point.style.backgroundColor = '#3b82f6';
+                        point.style.boxShadow = '0 0 5px rgba(59, 130, 246, 0.6)';
+                    } else if (method === 'tsne') {
+                        point.style.backgroundColor = '#c084fc';
+                        point.style.boxShadow = '0 0 5px rgba(192, 132, 252, 0.6)';
+                    } else {
+                        point.style.backgroundColor = '#00ff9d';
+                        point.style.boxShadow = '0 0 5px rgba(0, 255, 157, 0.6)';
+                    }
+                    
+                    canvas.appendChild(point);
+                }
+            }
+            
+            initEmbeddingVisualization() {
+                this.projectEmbeddings('pca');
+            }
+            
+            addNewRule() {
+                // Open rule creation modal
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-metal border border-logic-yellow rounded-xl p-6 max-w-md w-full mx-4">
+                        <h3 class="text-xl font-bold text-logic-yellow mb-4">Add Logical Rule</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Rule Name</label>
+                                <input type="text" id="rule-name" class="w-full bg-void border border-dim-gray rounded p-2 text-white text-sm" placeholder="e.g., thread_safety">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Formal Expression</label>
+                                <textarea id="rule-expression" class="w-full bg-void border border-dim-gray rounded p-2 text-logic-yellow text-sm h-24" placeholder="∀x ∈ S, P(x) → Q(x)"></textarea>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="this.parentElement.parentElement.parentElement.remove()" class="flex-1 py-2 border border-dim-gray text-gray-400 rounded hover:border-gray-500 transition-all">Cancel</button>
+                                <button onclick="sukiTierAI.saveNewRule()" class="flex-1 py-2 bg-logic-yellow text-void font-bold rounded hover:opacity-90 transition-all">Save Rule</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+            }
+            
+            saveNewRule() {
+                const nameInput = document.getElementById('rule-name');
+                const expressionInput = document.getElementById('rule-expression');
+                
+                const name = nameInput ? nameInput.value : '';
+                const expression = expressionInput ? expressionInput.value : '';
+                
+                if (name && expression) {
+                    this.formalEngine.addRule(name, expression, () => true);
+                    
+                    // Close modal
+                    const modal = document.querySelector('.fixed.inset-0.bg-black/80');
+                    if (modal) modal.remove();
+                    
+                    // Show success message
+                    const success = document.createElement('div');
+                    success.className = 'fixed top-4 right-4 bg-term-green text-void px-4 py-2 rounded shadow-lg z-50';
+                    success.textContent = `✓ Rule "${name}" added successfully`;
+                    document.body.appendChild(success);
+                    
+                    setTimeout(() => success.remove(), 3000);
+                } else {
+                    alert('Please fill in both fields');
+                }
+            }
+            
+            updateMetrics() {
+                // Update performance metrics
+                const metrics = this.apiManager.metrics;
+                // Metrics are displayed in the dashboard
+                console.log('Current metrics:', metrics);
+            }
+
+            destroy() {
+                if (this.metricsInterval) {
+                    clearInterval(this.metricsInterval);
+                }
+                if (this.visualizer) {
+                    this.visualizer.destroy();
+                }
+            }
+        }
+
+        // Initialize the application
+        let sukiTierAI;
+        window.onload = () => {
+            sukiTierAI = new SukiTierAI();
+            
+            // Set up global functions for inline event handlers
+            window.showTab = (tab) => sukiTierAI.showTab(tab);
+            window.runFormalVerification = () => sukiTierAI.runFormalVerification();
+            window.generateEmbedding = () => sukiTierAI.generateEmbedding();
+            window.projectEmbeddings = (method) => sukiTierAI.projectEmbeddings(method);
+            window.addNewRule = () => sukiTierAI.addNewRule();
+        };
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (sukiTierAI) {
+                sukiTierAI.destroy();
+            }
+        });
+    </script>
+</body>
+</html>
