@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SukiTier</string>
+    <string name="app_description">Tiered Android Root Module Manager for GKI 6.1</string>
+    <string name="tier1_core">Tier 1 - Core Foundation</string>
+    <string name="tier2_system">Tier 2 - System Patches</string>
+    <string name="tier3_experimental">Tier 3 - Experimental Features</string>
+    <string name="tier4_ota">Tier 4 - OTA Patching</string>
+    <string name="experimental_gate">Experimental Gate</string>
+    <string name="status_verifying">Verifying modules...</string>
+    <string name="status_ready">System ready</string>
+    <string name="status_failed">Verification failed</string>
+</resources>

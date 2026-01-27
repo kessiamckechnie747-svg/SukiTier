@@ -1,0 +1,79 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Deploy Suki Sentry (Tier 0)",
+            "type": "shell",
+            "command": "adb push ./scripts/rescue_sentry.sh /data/local/tmp/ && adb shell chmod 755 /data/local/tmp/rescue_sentry.sh && adb shell 'echo \"Suki Sentry deployed at $(date)\"'",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "echo": true,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Dry Run Audit",
+            "type": "shell",
+            "command": "./gradlew testDebugUnitTest --tests \"com.sukitier.inference.*\" --tests \"com.sukitier.kernel.*\" --continue",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            },
+            "problemMatcher": "$gradle"
+        },
+        {
+            "label": "Build Project",
+            "type": "shell",
+            "command": "./gradlew clean build",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": "$gradle"
+        },
+        {
+            "label": "Flash Safety Check",
+            "type": "shell",
+            "command": "adb shell 'cd /data/local/tmp && sh rescue_sentry.sh --dry-run --timeout 30'",
+            "group": "test",
+            "dependsOn": "Deploy Suki Sentry (Tier 0)",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Parse Debug Log",
+            "type": "shell",
+            "command": "python3 ./scripts/entropy_analyzer.py --input ./debug.log --threshold 7.8",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "command": "pip install -r ./scripts/requirements.txt",
+            "group": "none",
+            "presentation": {
+                "reveal": "silent"
+            }
+        }
+    ]
+}

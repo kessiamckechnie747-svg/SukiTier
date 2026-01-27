@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Color Palette -->
+    <color name="suki_terminal_green">#00FF00</color>
+    <color name="suki_neon_warning">#FF0055</color>
+    <color name="suki_industrial_gray">#1A1A1A</color>
+    <color name="suki_industrial_dark">#0A0A0A</color>
+    <color name="suki_anime_pink">#FF66A8</color>
+    <color name="suki_anime_blue">#66B2FF</color>
+    <color name="suki_status_ok">#00CC88</color>
+    <color name="suki_status_warn">#FFAA00</color>
+    <color name="suki_status_error">#FF2255</color>
+    <color name="suki_entropy_spike">#FF0055</color>
+    
+    <!-- Text Appearances -->
+    <style name="TextAppearance.SukiTier.Body" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/suki_terminal_green</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+    
+    <style name="TextAppearance.SukiTier.Header" parent="TextAppearance.SukiTier.Body">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/suki_neon_warning</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- LED Indicator Styles -->
+    <style name="Widget.SukiTier.LED">
+        <item name="android:minWidth">24dp</item>
+        <item name="android:minHeight">24dp</item>
+    </style>
+    
+    <!-- Industrial Button -->
+    <style name="Widget.SukiTier.Button.Industrial" parent="Widget.AppCompat.Button">
+        <item name="android:textAppearance">@style/TextAppearance.SukiTier.Body</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:padding">12dp</item>
+    </style>
+    
+    <!-- Theme Definition -->
+    <style name="Theme.SukiTier" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Industrial Base -->
+        <item name="android:windowBackground">@color/suki_industrial_dark</item>
+        <item name="android:statusBarColor">@color/suki_industrial_gray</item>
+        <item name="android:navigationBarColor">@color/suki_industrial_dark</item>
+        
+        <!-- Terminal Green Primary -->
+        <item name="colorPrimary">@color/suki_terminal_green</item>
+        <item name="colorPrimaryVariant">@color/suki_status_ok</item>
+        <item name="colorOnPrimary">@color/black</item>
+        
+        <!-- Neon Warning Secondary -->
+        <item name="colorSecondary">@color/suki_neon_warning</item>
+        <item name="colorSecondaryVariant">@color/suki_anime_pink</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <!-- Fonts -->
+        <item name="android:fontFamily">monospace</item>
+    </style>
+</resources>

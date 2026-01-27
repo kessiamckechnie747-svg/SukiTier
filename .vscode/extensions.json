@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "mathiasfrohlich.Kotlin",
+        "vscjava.vscode-java-pack",
+        "redhat.java",
+        "ms-vscode.makefile-tools",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "wayou.vscode-todo-highlight",
+        "gruntfuggly.todo-tree",
+        "usernamehw.errorlens",
+        "aaron-bond.better-comments",
+        "ms-vscode-remote.remote-adb",
+        "foxundermoon.shell-format"
+    ]
+}

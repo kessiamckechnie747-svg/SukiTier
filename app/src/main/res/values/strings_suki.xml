@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tsundere Error Messages -->
+    <string name="suki_error_integrity_fail">Baka! That image signature is trash! Do you want to brick us? ( integrity_score &lt; 40 )</string>
+    <string name="suki_error_wrong_device">Hmph. That cargo isn\'t for this ship. Check your manifest, Captain!</string>
+    <string name="suki_error_timeout">Taking too long! Are you trying to bore me to death?</string>
+    <string name="suki_error_io">I/O Error? More like \"Idiot Operator\" error!</string>
+    <string name="suki_error_permission">You don\'t have the right, O human!</string>
+    
+    <!-- Kawaii Success Messages -->
+    <string name="suki_success_tier1">All systems green! You\'re… not completely useless, I guess.</string>
+    <string name="suki_success_tier2">Moderate risk detected. Don\'t make me regret this!</string>
+    <string name="suki_success_tier3">Experimental build? You really like living dangerously…</string>
+    <string name="suki_success_flash">Flash complete! …Don\'t get cocky, it was mostly me.</string>
+    
+    <!-- Industrial Status Messages -->
+    <string name="suki_status_initializing">Initializing Neurolink… Consciousness at 34%%</string>
+    <string name="suki_status_analyzing">Analyzing heuristic patterns… Sentient logic engaged</string>
+    <string name="suki_status_verifying">Verifying metal interfaces… Kernel handshake complete</string>
+    <string name="suki_status_flashing">Engaging flash protocol… Human override ready</string>
+    <string name="suki_status_complete">Operation complete. Systems nominal. (I did good, right?)</string>
+    
+    <!-- Hardware Dialogues -->
+    <string name="suki_hardware_override">Manual valve detected! …Fine, you can have control. For now.</string>
+    <string name="suki_hardware_timeout">Boot timeout! Disabling rogue modules… This better not be your fault!</string>
+    <string name="suki_hardware_recovery">Emergency recovery engaged. Try not to break it this time.</string>
+    
+    <!-- Marine/Chief Directive Messages -->
+    <string name="suki_fuel_rack_locked">Hull breach! (Kernel panic simulation). I\'m shutting down the drive motors so we don\'t sink. Fix your code, Captain!</string>
+    <string name="suki_idempotent_block">Quit spamming the button! I already told you I\'m working on it. One task at a time, dummy.</string>
+    <string name="suki_chief_override">Manual override detected. Fuel rack disengaged. Proceed with extreme caution, Captain.</string>
+    
+    <!-- Easter Egg Messages -->
+    <string name="suki_easter_egg_konami">Code accepted. Developer Waifu Mode: UNLOCKED (///ω///)</string>
+    <string name="suki_easter_egg_blush">Don\'t look at me like that! I\'m just doing my job!</string>
+    <string name="suki_easter_egg_secret">You found my debug mode… Not that I wanted you to!</string>
+    
+    <!-- DCS Display Mode -->
+    <string name="suki_dcs_mode_activated">DISTRIBUTED CONTROL SYSTEM MODE ACTIVATED</string>
+    <string name="suki_dcs_entropy_spike">⚠ ENTROPY SPIKE DETECTED: %1$s - High packing signature</string>
+    <string name="suki_dcs_tier_lock">TIER %1$d - AUTHORIZATION REQUIRED</string>
+    <string name="suki_dcs_validation_pass">✓ VALIDATION PASSED - PROCEEDING</string>
+    <string name="suki_dcs_validation_fail">✗ VALIDATION FAILED - SYSTEM LOCKED</string>
+</resources>

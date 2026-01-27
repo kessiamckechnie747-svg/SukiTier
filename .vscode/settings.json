@@ -1,0 +1,59 @@
+{
+    "editor.fontFamily": "'JetBrains Mono', 'Cascadia Code', monospace",
+    "editor.fontSize": 12,
+    "editor.lineHeight": 1.6,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    
+    "files.associations": {
+        "*.suki": "shellscript",
+        "*.kt": "kotlin",
+        "*.kts": "kotlin"
+    },
+    
+    "terminal.integrated.fontFamily": "'JetBrains Mono'",
+    "terminal.integrated.fontSize": 11,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.cursorBlinking": true,
+    
+    "kotlin.compiler.jvm.target": "1.8",
+    
+    "cSpell.words": [
+        "sukitier",
+        "tsundere",
+        "kawaii",
+        "konami",
+        "idempotent",
+        "ioctl",
+        "insmod",
+        "setenforce",
+        "ByteBuffer",
+        "CoroutineDispatcher",
+        "AtomicInteger",
+        "Neurolink",
+        "HybridMarineController"
+    ],
+    
+    "workbench.colorCustomizations": {
+        "terminal.background": "#0A0A0A",
+        "terminal.foreground": "#00FF00",
+        "terminalCursor.background": "#00FF00",
+        "terminalCursor.foreground": "#00FF00",
+        "terminal.ansiBlack": "#0A0A0A",
+        "terminal.ansiGreen": "#00FF00",
+        "terminal.ansiRed": "#FF0055",
+        "terminal.ansiBlue": "#66B2FF",
+        "terminal.ansiMagenta": "#FF66A8",
+        "terminal.ansiYellow": "#FFAA00"
+    },
+    
+    "[kotlin]": {
+        "editor.defaultFormatter": "fwcd.kotlin",
+        "editor.formatOnSave": true
+    },
+    
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "editor.formatOnSave": true
+    }
+}

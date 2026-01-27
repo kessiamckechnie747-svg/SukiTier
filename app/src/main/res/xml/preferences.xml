@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <PreferenceCategory android:title="Verification">
+        <Preference
+            android:key="verify_tier1"
+            android:title="Verify Tier 1"
+            android:summary="Run integrity check on core modules" />
+        <Preference
+            android:key="verify_tier2"
+            android:title="Verify Tier 2"
+            android:summary="Run integrity check on system modules" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Experimental">
+        <SwitchPreference
+            android:key="enable_tier3"
+            android:title="Enable Tier 3"
+            android:summary="Requires Tier 1 + Tier 2 verification" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Advanced">
+        <Preference
+            android:key="view_logs"
+            android:title="View Logs"
+            android:summary="Access verification and failsafe logs" />
+        <Preference
+            android:key="manage_snapshots"
+            android:title="Manage Snapshots"
+            android:summary="View and restore rollback snapshots" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

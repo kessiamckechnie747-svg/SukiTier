@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="surface_variant">#2a2a2a</color>
+    <color name="error_variant">#663333</color>
+    <color name="success">#00FF00</color>
+    <color name="warning">#FFAA00</color>
+    <color name="danger">#FF0000</color>
+</resources>

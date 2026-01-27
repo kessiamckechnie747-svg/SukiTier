@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SukiTier" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorTertiary">@color/tertiary</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    
+    <color name="primary">#00FF00</color>
+    <color name="secondary">#00AAFF</color>
+    <color name="tertiary">#FFAA00</color>
+    <color name="background">#0a0a0a</color>
+    <color name="surface">#1a1a1a</color>
+</resources>

@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to Android Process",
+            "type": "java",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 5005,
+            "projectName": "SukiTier",
+            "timeout": 30000,
+            "preLaunchTask": "Build Project",
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "SUKI_DEBUG_MODE": "1",
+                "SUKI_LOG_LEVEL": "VERBOSE"
+            }
+        },
+        {
+            "name": "Run Unit Tests",
+            "type": "java",
+            "request": "launch",
+            "mainClass": "org.junit.platform.console.ConsoleLauncher",
+            "args": [
+                "execute",
+                "--scan-classpath"
+            ],
+            "vmArgs": [
+                "-XX:+UseG1GC",
+                "-Xmx4g"
+            ],
+            "env": {
+                "SUKI_TEST_MODE": "1"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}
