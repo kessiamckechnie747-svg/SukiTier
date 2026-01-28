@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SukiTier AI - Android Root Module Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Industrial Cyberpunk 
+         Background: #050505 (Void Black)
+         Primary Text: #00ff9d (Terminal Green)
+         Accents: #00d2ff (Holo Cyan), #c084fc (AI Purple)
+    -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'void': '#050505',
+                        'metal': '#111111',
+                        'metal-light': '#1a1a1a',
+                        'term-green': '#00ff9d',
+                        'holo-cyan': '#00d2ff',
+                        'alert-red': '#ff3e3e',
+                        'warn-orange': '#ffae00',
+                        'ai-purple': '#c084fc',
+                        'dim-gray': '#444444'
+                    },
+                    fontFamily: {
+                        'mono': ['"Courier New"', 'Courier', 'monospace'],
+                        'sans': ['"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border: 1px solid #00ff9d; }
+        .scanline {
+            width: 100%; height: 100px; z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(192, 132, 252, 0.05) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1; position: absolute; bottom: 100%; animation: scanline 12s linear infinite; pointer-events: none;
+        }
+        @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: -100%; } }
+        .cursor { display: inline-block; width: 8px; height: 15px; background-color: #00ff9d; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .chart-container { position: relative; width: 100%; max-width: 300px; height: 250px; margin: 0 auto; }
+        .ai-glow { box-shadow: 0 0 15px rgba(192, 132, 252, 0.2); }
+    </style>
+</head>
+<body class="bg-void text-gray-300 font-sans min-h-screen selection:bg-ai-purple selection:text-void overflow-x-hidden">
+
+    <!-- Application Structure Plan:
+         This SPA translates a technical firmware report into an interactive command center.
+         1. Dashboard: Real-time visual gauges of firmware integrity tiers.
+         2. Dependency Architecture: Visualizes the T1->T2->T3 cascade.
+         3. ✨ Gemini API Intelligence Deck: 
+            - Log Diagnostic: Converts cryptic kernel logs into human-readable fixes.
+            - Manifest Architect: Generates JSON policies from natural language.
+         Rationale: Rooting and kernel modification are high-risk. Integrating AI 
+         allows users to verify "vermagic" and "checksum" errors instantly without deep kernel knowledge.
+    -->
+
+    <div class="scanline"></div>
+
+    <!-- HEADER -->
+    <header class="border-b border-dim-gray bg-metal bg-opacity-90 sticky top-0 z-50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-term-green rounded-full shadow-[0_0_10px_#00ff9d] animate-pulse"></div>
+                <h1 class="text-xl font-mono font-bold tracking-wider text-term-green uppercase">SukiTier <span class="text-ai-purple">AI</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <div class="hidden md:flex gap-4 text-[10px] font-mono text-holo-cyan uppercase">
+                    <span>Target: Android 16</span>
+                    <span>Kernel: GKI 6.1</span>
+                    <span id="status-indicator" class="text-term-green">Integrity: Verified</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- INTRO SECTION -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <div class="space-y-4">
+                <h2 class="text-3xl font-bold text-white leading-tight">Intelligent Firmware <br><span class="text-ai-purple">Integrity Management</span></h2>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    SukiTier AI bridges the gap between low-level kernel development and user-friendly management. 
+                    Utilizing a 4-Tier mounting architecture, the system ensures that even if an experimental module 
+                    fails, the <strong>Rescue Sentry</strong> can use Gemini-driven diagnostics to recover.
+                </p>
+                <div class="flex gap-3">
+                    <button onclick="scrollToAI()" class="px-4 py-2 bg-ai-purple text-void font-bold rounded text-xs uppercase tracking-tighter hover:bg-white transition-all">✨ Consult AI Architect</button>
+                    <button onclick="simulateCorruption()" class="px-4 py-2 border border-alert-red text-alert-red rounded text-xs uppercase hover:bg-alert-red hover:text-white transition-all">Trigger Fault</button>
+                </div>
+            </div>
+
+            <!-- GAUGES -->
+            <div class="bg-metal border border-dim-gray rounded-lg p-6 grid grid-cols-2 md:grid-cols-4 gap-4 ai-glow">
+                <div class="flex flex-col items-center">
+                    <div class="chart-container h-32 w-32"><canvas id="gaugeTier1"></canvas></div>
+                    <span class="text-[10px] font-mono mt-2 uppercase">Tier 1: Core</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-container h-32 w-32"><canvas id="gaugeTier2"></canvas></div>
+                    <span class="text-[10px] font-mono mt-2 uppercase">Tier 2: Sys</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-container h-32 w-32"><canvas id="gaugeTier3"></canvas></div>
+                    <span class="text-[10px] font-mono mt-2 uppercase">Tier 3: Exp</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-container h-32 w-32"><canvas id="gaugeTier4"></canvas></div>
+                    <span class="text-[10px] font-mono mt-2 uppercase">Tier 4: OTA</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI INTELLIGENCE DECK -->
+        <section id="ai-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-24">
+            
+            <!-- TOOL 1: DIAGNOSTIC ANALYZER -->
+            <div class="bg-metal border border-ai-purple border-opacity-30 rounded-xl overflow-hidden flex flex-col shadow-2xl">
+                <div class="bg-ai-purple bg-opacity-10 p-4 border-b border-ai-purple border-opacity-20 flex justify-between items-center">
+                    <h3 class="text-ai-purple font-bold font-mono text-sm uppercase">✨ Diagnostic Intelligence</h3>
+                    <span class="text-[10px] text-ai-purple opacity-70">powered by gemini-2.5-flash</span>
+                </div>
+                <div class="p-6 space-y-4 flex-1">
+                    <p class="text-xs text-gray-500 italic">Paste kernel logs, vermagic strings, or dmesg output below to diagnose boot loops or integrity failures.</p>
+                    <textarea id="ai-input-logs" class="w-full h-32 bg-void border border-dim-gray rounded p-3 font-mono text-xs text-term-green focus:border-ai-purple outline-none transition-all" placeholder="[   0.000000] Linux version 6.1.0-android14..."></textarea>
+                    
+                    <div id="ai-diagnostic-result" class="hidden bg-metal-light border border-dim-gray rounded p-4 text-xs font-mono whitespace-pre-wrap leading-relaxed">
+                        <!-- AI Response Here -->
+                    </div>
+
+                    <button id="btn-analyze" onclick="analyzeLogsWithAI()" class="w-full py-3 bg-ai-purple bg-opacity-20 border border-ai-purple text-ai-purple font-bold rounded uppercase text-xs hover:bg-ai-purple hover:text-void transition-all">
+                        ✨ Analyze Log & Suggest Fix
+                    </button>
+                    <div id="ai-loading" class="hidden flex justify-center py-2">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-ai-purple"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOOL 2: MANIFEST ARCHITECT -->
+            <div class="bg-metal border border-holo-cyan border-opacity-30 rounded-xl overflow-hidden flex flex-col shadow-2xl">
+                <div class="bg-holo-cyan bg-opacity-10 p-4 border-b border-holo-cyan border-opacity-20 flex justify-between items-center">
+                    <h3 class="text-holo-cyan font-bold font-mono text-sm uppercase">✨ Policy Architect</h3>
+                    <span class="text-[10px] text-holo-cyan opacity-70">manifest auto-gen</span>
+                </div>
+                <div class="p-6 space-y-4 flex-1">
+                    <p class="text-xs text-gray-500 italic">Describe what your module does (e.g. "A module that changes CPU governor and bypasses SELinux for audio apps").</p>
+                    <input id="ai-input-desc" type="text" class="w-full bg-void border border-dim-gray rounded p-3 font-mono text-xs text-holo-cyan focus:border-holo-cyan outline-none transition-all" placeholder="I want to patch system UI colors...">
+                    
+                    <div id="ai-manifest-result" class="hidden bg-black rounded p-4 border border-dim-gray relative group">
+                        <button onclick="copyManifest()" class="absolute top-2 right-2 text-[10px] text-gray-500 hover:text-white border border-dim-gray px-1 rounded">COPY</button>
+                        <pre id="manifest-code" class="text-[10px] text-term-green overflow-x-auto"></pre>
+                    </div>
+
+                    <button id="btn-generate" onclick="generateManifestWithAI()" class="w-full py-3 bg-holo-cyan bg-opacity-20 border border-holo-cyan text-holo-cyan font-bold rounded uppercase text-xs hover:bg-holo-cyan hover:text-void transition-all">
+                        ✨ Generate SukiTier Policy
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TERMINAL & STATUS -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- TERMINAL -->
+            <div class="lg:col-span-2 bg-black border border-dim-gray rounded-lg p-4 h-64 font-mono text-xs overflow-hidden flex flex-col shadow-inner">
+                <div class="border-b border-dim-gray pb-2 mb-2 text-gray-500 flex justify-between uppercase tracking-widest text-[10px]">
+                    <span>sys_log_stream</span>
+                    <span class="animate-pulse text-term-green">CONNECTED</span>
+                </div>
+                <div id="terminal-output" class="flex-1 overflow-y-auto space-y-1 text-gray-300 pr-2">
+                    <div><span class="text-dim-gray">[00:01.0]</span> <span class="text-holo-cyan">BOOT</span> SukiTier Manager Initialized.</div>
+                    <div><span class="text-dim-gray">[00:01.2]</span> <span class="text-term-green">OK</span> Verifying GKI 6.1 Kernel...</div>
+                </div>
+            </div>
+
+            <!-- INFO BOX -->
+            <div class="bg-metal border border-dim-gray rounded-lg p-5">
+                <h3 class="font-mono text-white font-bold mb-4 border-b border-dim-gray pb-2 text-xs uppercase">Deployment Guide</h3>
+                <ul class="text-[10px] space-y-3 text-gray-400">
+                    <li><strong class="text-term-green">STEP 1:</strong> Use ✨ Policy Architect to define your module metadata.</li>
+                    <li><strong class="text-term-green">STEP 2:</strong> Adhere to Tier 1 constraints for kernel level patches.</li>
+                    <li><strong class="text-term-green">STEP 3:</strong> Run <code class="bg-black p-1">init_modules.sh</code> via adb shell.</li>
+                    <li><strong class="text-term-green">STEP 4:</strong> Verify via Dashboard gauges.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-dim-gray py-8 mt-12 text-center text-xs text-gray-600 font-mono uppercase tracking-widest">
+        <p>SukiTier AI Control Plane v2.0</p>
+        <p class="mt-2 opacity-50">Confined Environment | Gemini-Driven Diagnostics Enabled</p>
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        const apiKey = ""; // Provided by environment
+        const systemState = { t1: 100, t2: 100, t3: 0, t4: 100, corrupted: false };
+        let charts = {};
+
+        function initCharts() {
+            const chartConfig = (id, color) => {
+                const ctx = document.getElementById(id).getContext('2d');
+                return new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [100, 0],
+                            backgroundColor: [color, '#111'],
+                            borderWidth: 0, cutout: '80%', circumference: 180, rotation: 270
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: false, tooltip: false }
+                    }
+                });
+            };
+            charts.t1 = chartConfig('gaugeTier1', '#00ff9d');
+            charts.t2 = chartConfig('gaugeTier2', '#00ff9d');
+            charts.t3 = chartConfig('gaugeTier3', '#444');
+            charts.t4 = chartConfig('gaugeTier4', '#00d2ff');
+        }
+
+        function log(type, msg) {
+            const term = document.getElementById('terminal-output');
+            const time = new Date().toISOString().substr(14, 5);
+            const div = document.createElement('div');
+            const colors = { ERROR: 'text-alert-red', INFO: 'text-holo-cyan', PASS: 'text-term-green', AI: 'text-ai-purple' };
+            div.innerHTML = `<span class="text-dim-gray">[${time}]</span> <span class="${colors[type] || 'text-white'}">${type}</span> ${msg}`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function updateGauges() {
+            const update = (chart, val, col) => {
+                chart.data.datasets[0].data = [val, 100 - val];
+                chart.data.datasets[0].backgroundColor[0] = col;
+                chart.update();
+            };
+            update(charts.t1, systemState.t1, systemState.t1 < 100 ? '#ff3e3e' : '#00ff9d');
+            update(charts.t2, systemState.t2, systemState.t2 < 100 ? '#ff3e3e' : '#00ff9d');
+            update(charts.t3, systemState.t3, systemState.t3 > 0 ? '#c084fc' : '#444');
+            update(charts.t4, systemState.t4, '#00d2ff');
+        }
+
+        function simulateCorruption() {
+            log('ERROR', 'Module Integrity Checksum Mismatch: TIER 1');
+            systemState.t1 = 30;
+            systemState.t2 = 0;
+            updateGauges();
+            document.getElementById('status-indicator').innerText = "FAILURE DETECTED";
+            document.getElementById('status-indicator').className = "text-alert-red animate-pulse";
+            log('INFO', 'Suggesting ✨ AI Diagnostic for recovery.');
+        }
+
+        function scrollToAI() {
+            document.getElementById('ai-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // GEMINI API INTEGRATIONS
+        
+        async function callGemini(prompt, systemInstruction) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Error processing request.";
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+            return "Connection failed. Please check network.";
+        }
+
+        async function analyzeLogsWithAI() {
+            const input = document.getElementById('ai-input-logs').value;
+            if (!input) return;
+
+            document.getElementById('ai-loading').classList.remove('hidden');
+            document.getElementById('ai-diagnostic-result').classList.add('hidden');
+            log('AI', 'Consulting Gemini for log diagnostics...');
+
+            const prompt = `Analyze this Android Kernel/Module log for SukiTier. Identify why the integrity check failed or why the module won't mount. Give a clear explanation and a fix command. Log:\n${input}`;
+            const systemPrompt = "You are an expert Linux Kernel Engineer specializing in Android GKI 6.1 and SukiTier tiered root management. Be concise, technical, and helpful. Use markdown for commands.";
+
+            const result = await callGemini(prompt, systemPrompt);
+            
+            document.getElementById('ai-loading').classList.add('hidden');
+            const resBox = document.getElementById('ai-diagnostic-result');
+            resBox.classList.remove('hidden');
+            resBox.innerText = result;
+            log('AI', 'Diagnostic complete.');
+        }
+
+        async function generateManifestWithAI() {
+            const desc = document.getElementById('ai-input-desc').value;
+            if (!desc) return;
+
+            log('AI', 'Architecting module policy...');
+            const btn = document.getElementById('btn-generate');
+            btn.innerText = "✨ Architecting...";
+
+            const prompt = `Create a SukiTier manifest.json for this requirement: "${desc}". Ensure you pick the correct TIER (1, 2, or 3) based on risk. Output ONLY the JSON.`;
+            const systemPrompt = "You generate valid JSON manifests for SukiTier modules. Format: { 'id': string, 'name': string, 'tier': number, 'description': string, 'dependencies': [], 'policy': 'STRICT'|'NORMAL' }";
+
+            const result = await callGemini(prompt, systemPrompt);
+            
+            document.getElementById('manifest-code').innerText = result;
+            document.getElementById('ai-manifest-result').classList.remove('hidden');
+            btn.innerText = "✨ Generate SukiTier Policy";
+            log('AI', 'Policy generation successful.');
+        }
+
+        function copyManifest() {
+            const code = document.getElementById('manifest-code').innerText;
+            const el = document.createElement('textarea');
+            el.value = code;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            log('INFO', 'Manifest copied to clipboard.');
+        }
+
+        window.onload = () => {
+            initCharts();
+            updateGauges();
+        };
+    </script>
+</body>
+</html>
